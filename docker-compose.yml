@@ -13,3 +13,16 @@ services:
       interval: 2s
       timeout: 3s
       retries: 15
+
+  app:
+    build: .
+    container_name: incidencias-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/incidencias
+      DB_USER: incidencias
+      DB_PASSWORD: incidencias
+    depends_on:
+      db:
+        condition: service_healthy
