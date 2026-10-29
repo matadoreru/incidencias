@@ -4,7 +4,7 @@ import com.bdo.incidencias.domain.model.Estado;
 import jakarta.validation.constraints.NotNull;
 
 public record CambiarEstadoRequest(
-    @NotNull
+    @NotNull(message = "es obligatorio")
     Estado estado
 ) {
 }
