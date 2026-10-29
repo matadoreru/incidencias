@@ -61,6 +61,14 @@ public class IncidenciaController {
             .toList();
     }
 
+    @Operation(summary = "Consultar una incidencia")
+    @ApiResponse(responseCode = "200", description = "Incidencia encontrada")
+    @ApiResponse(responseCode = "404", description = "La incidencia no existe")
+    @GetMapping("/{id}")
+    public IncidenciaResponse obtener(@PathVariable Long id) {
+        return IncidenciaResponse.from(incidenciaService.obtener(id));
+    }
+
     @Operation(summary = "Cambiar el estado de una incidencia",
         description = "Una incidencia CERRADA no puede cambiar de estado.")
     @ApiResponse(responseCode = "200", description = "Estado actualizado")

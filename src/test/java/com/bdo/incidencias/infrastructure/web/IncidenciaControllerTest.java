@@ -161,6 +161,30 @@ class IncidenciaControllerTest {
             .bodyJson().hasPathSatisfying("$.status", status -> status.assertThat().isEqualTo(400));
     }
 
+    // ---- GET /api/incidencias/{id} ----
+
+    @Test
+    void obtenerDevuelve200ConLaIncidencia() {
+        when(incidenciaService.obtener(3L)).thenReturn(incidencia(3L, Estado.EN_CURSO, null));
+
+        MvcTestResult result = mvc.get().uri("/api/incidencias/{id}", 3L).exchange();
+
+        assertThat(result).hasStatus(HttpStatus.OK)
+            .bodyJson()
+            .hasPathSatisfying("$.id", id -> id.assertThat().isEqualTo(3))
+            .hasPathSatisfying("$.estado", estado -> estado.assertThat().isEqualTo("EN_CURSO"));
+    }
+
+    @Test
+    void obtenerUnaIncidenciaInexistenteDevuelve404() {
+        when(incidenciaService.obtener(404L)).thenThrow(new IncidenciaNoEncontradaException(404L));
+
+        MvcTestResult result = mvc.get().uri("/api/incidencias/{id}", 404L).exchange();
+
+        assertThat(result).hasStatus(HttpStatus.NOT_FOUND)
+            .bodyJson().hasPathSatisfying("$.title", title -> title.assertThat().isEqualTo("Incidencia no encontrada"));
+    }
+
     // ---- PATCH /api/incidencias/{id}/estado ----
 
     @Test

@@ -73,6 +73,21 @@ class IncidenciaServiceTest {
     }
 
     @Test
+    void obtenerDevuelveLaIncidenciaPorId() {
+        Incidencia existente = new Incidencia("Correo lento", null, Prioridad.MEDIA, null);
+        when(incidenciaRepository.findById(3L)).thenReturn(Optional.of(existente));
+
+        assertThat(service.obtener(3L)).isSameAs(existente);
+    }
+
+    @Test
+    void obtenerUnaIncidenciaInexistenteLanzaExcepcion() {
+        when(incidenciaRepository.findById(404L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.obtener(404L)).isInstanceOf(IncidenciaNoEncontradaException.class);
+    }
+
+    @Test
     void cambiarEstadoDeUnaIncidenciaAbiertaLaPasaAEnCurso() {
         Incidencia abierta = new Incidencia("Correo lento", null, Prioridad.MEDIA, null);
         when(incidenciaRepository.findById(5L)).thenReturn(Optional.of(abierta));

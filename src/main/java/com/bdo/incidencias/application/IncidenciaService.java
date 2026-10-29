@@ -48,6 +48,12 @@ public class IncidenciaService {
         return incidenciaRepository.findAllByEstadoOrderByFechaCreacionDescIdDesc(estado);
     }
 
+    @Transactional(readOnly = true)
+    public Incidencia obtener(Long id) {
+        return incidenciaRepository.findById(id)
+            .orElseThrow(() -> new IncidenciaNoEncontradaException(id));
+    }
+
     /**
      * Cambia el estado. La regla de las incidencias cerradas vive en la entidad; el cambio se
      * persiste al cerrar la transacción (dirty checking de JPA).
