@@ -63,3 +63,23 @@ td.vacio {
     text-align: center;
     color: #666;
 }
+
+.nueva {
+    margin-top: 32px;
+}
+
+.nueva h2 {
+    font-size: 1.2rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+    max-width: 480px;
+}
+
+button {
+    cursor: pointer;
+}

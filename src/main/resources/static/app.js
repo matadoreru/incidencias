@@ -1,22 +1,26 @@
 'use strict';
 
 const API = '/api/incidencias';
+const API_USUARIOS = '/api/usuarios';
 
 const tabla = document.querySelector('#tabla-incidencias tbody');
 const filtroEstado = document.querySelector('#filtro-estado');
 const mensaje = document.querySelector('#mensaje');
+const form = document.querySelector('#form-incidencia');
+const selectUsuario = document.querySelector('#usuarioAsignadoId');
+const mensajeForm = document.querySelector('#mensaje-form');
 
 const ESTADOS = { ABIERTA: 'Abierta', EN_CURSO: 'En curso', CERRADA: 'Cerrada' };
 const PRIORIDADES = { BAJA: 'Baja', MEDIA: 'Media', ALTA: 'Alta' };
 
-function mostrarMensaje(texto, tipo) {
-    mensaje.textContent = texto;
-    mensaje.className = 'mensaje' + (tipo === 'ok' ? ' ok' : '');
-    mensaje.hidden = false;
+function mostrarMensaje(texto, tipo, destino = mensaje) {
+    destino.textContent = texto;
+    destino.className = 'mensaje' + (tipo === 'ok' ? ' ok' : '');
+    destino.hidden = false;
 }
 
-function ocultarMensaje() {
-    mensaje.hidden = true;
+function ocultarMensaje(destino = mensaje) {
+    destino.hidden = true;
 }
 
 function formatearFecha(iso) {
@@ -76,6 +80,54 @@ async function cargarIncidencias() {
     }
 }
 
+async function cargarUsuarios() {
+    try {
+        const respuesta = await fetch(API_USUARIOS);
+        if (!respuesta.ok) {
+            throw new Error(await describirError(respuesta));
+        }
+        for (const usuario of await respuesta.json()) {
+            const opcion = document.createElement('option');
+            opcion.value = usuario.id;
+            opcion.textContent = usuario.nombre;
+            selectUsuario.append(opcion);
+        }
+    } catch (error) {
+        // El formulario sigue siendo útil sin la lista de usuarios: se podrá crear sin asignar.
+        mostrarMensaje('No se ha podido cargar la lista de usuarios; se podrá crear sin asignar.', 'error', mensajeForm);
+    }
+}
+
+async function crearIncidencia(evento) {
+    evento.preventDefault();
+    const datos = new FormData(form);
+    const cuerpo = {
+        titulo: datos.get('titulo').trim(),
+        descripcion: datos.get('descripcion').trim() || null,
+        prioridad: datos.get('prioridad'),
+        usuarioAsignadoId: datos.get('usuarioAsignadoId') ? Number(datos.get('usuarioAsignadoId')) : null
+    };
+    try {
+        const respuesta = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cuerpo)
+        });
+        if (!respuesta.ok) {
+            throw new Error(await describirError(respuesta));
+        }
+        const creada = await respuesta.json();
+        form.reset();
+        mostrarMensaje(`Incidencia ${creada.id} creada.`, 'ok', mensajeForm);
+        await cargarIncidencias();
+    } catch (error) {
+        const detalle = error instanceof TypeError ? 'No se ha podido conectar con la API.' : error.message;
+        mostrarMensaje('No se ha podido crear la incidencia. ' + detalle, 'error', mensajeForm);
+    }
+}
+
 filtroEstado.addEventListener('change', cargarIncidencias);
+form.addEventListener('submit', crearIncidencia);
 
 cargarIncidencias();
+cargarUsuarios();
