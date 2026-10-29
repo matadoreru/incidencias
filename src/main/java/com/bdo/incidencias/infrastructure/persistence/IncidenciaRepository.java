@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface IncidenciaRepository extends JpaRepository<Incidencia, Long> {
 
+    // El usuario asignado se carga en la misma consulta (JOIN) para evitar una consulta por fila en los listados.
     @EntityGraph(attributePaths = "usuarioAsignado")
     List<Incidencia> findAllByOrderByFechaCreacionDescIdDesc();
 
