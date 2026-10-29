@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: incidencias
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/incidencias}
+    username: ${DB_USER:incidencias}
+    password: ${DB_PASSWORD:incidencias}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
