@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Incidencias</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+    <h1>Incidencias</h1>
+
+    <section class="filtro">
+        <label for="filtro-estado">Estado</label>
+        <select id="filtro-estado">
+            <option value="">Todos</option>
+            <option value="ABIERTA">Abierta</option>
+            <option value="EN_CURSO">En curso</option>
+            <option value="CERRADA">Cerrada</option>
+        </select>
+    </section>
+
+    <p id="mensaje" class="mensaje" hidden></p>
+
+    <table id="tabla-incidencias">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Título</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Creada</th>
+            <th>Asignada a</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
