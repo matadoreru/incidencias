@@ -4,7 +4,7 @@ import com.bdo.incidencias.domain.model.Estado;
 import com.bdo.incidencias.domain.model.Incidencia;
 import com.bdo.incidencias.domain.model.Prioridad;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record IncidenciaResponse(
     Long id,
@@ -12,7 +12,7 @@ public record IncidenciaResponse(
     String descripcion,
     Prioridad prioridad,
     Estado estado,
-    LocalDateTime fechaCreacion,
+    Instant fechaCreacion,
     UsuarioResponse usuarioAsignado
 ) {
 

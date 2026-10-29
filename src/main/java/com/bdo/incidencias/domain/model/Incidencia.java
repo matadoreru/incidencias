@@ -13,7 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "incidencia")
@@ -38,7 +38,7 @@ public class Incidencia {
     private Estado estado;
 
     @Column(name = "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion;
+    private Instant fechaCreacion;
 
     /**
      * Carga inmediata: la API siempre devuelve el usuario asignado junto a la incidencia y la respuesta
@@ -60,7 +60,7 @@ public class Incidencia {
         this.prioridad = prioridad;
         this.usuarioAsignado = usuarioAsignado;
         this.estado = Estado.ABIERTA;
-        this.fechaCreacion = LocalDateTime.now();
+        this.fechaCreacion = Instant.now();
     }
 
     /**
@@ -93,7 +93,7 @@ public class Incidencia {
         return estado;
     }
 
-    public LocalDateTime getFechaCreacion() {
+    public Instant getFechaCreacion() {
         return fechaCreacion;
     }
 
