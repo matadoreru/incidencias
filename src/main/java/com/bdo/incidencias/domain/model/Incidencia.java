@@ -40,7 +40,11 @@ public class Incidencia {
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /**
+     * Carga inmediata: la API siempre devuelve el usuario asignado junto a la incidencia y la respuesta
+     * se construye fuera de la transacción (open-in-view desactivado).
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_asignado_id")
     private Usuario usuarioAsignado;
 
