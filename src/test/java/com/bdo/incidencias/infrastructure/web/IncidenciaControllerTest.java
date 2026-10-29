@@ -110,7 +110,9 @@ class IncidenciaControllerTest {
             """);
 
         assertThat(result).hasStatus(HttpStatus.BAD_REQUEST)
-            .bodyJson().hasPathSatisfying("$.status", status -> status.assertThat().isEqualTo(400));
+            .bodyJson()
+            .hasPathSatisfying("$.status", status -> status.assertThat().isEqualTo(400))
+            .hasPathSatisfying("$.title", title -> title.assertThat().isEqualTo("Petición inválida"));
     }
 
     @Test
@@ -158,7 +160,20 @@ class IncidenciaControllerTest {
         MvcTestResult result = mvc.get().uri("/api/incidencias").param("estado", "FOO").exchange();
 
         assertThat(result).hasStatus(HttpStatus.BAD_REQUEST)
-            .bodyJson().hasPathSatisfying("$.status", status -> status.assertThat().isEqualTo(400));
+            .bodyJson()
+            .hasPathSatisfying("$.status", status -> status.assertThat().isEqualTo(400))
+            .hasPathSatisfying("$.title", title -> title.assertThat().isEqualTo("Petición inválida"))
+            .hasPathSatisfying("$.detail", detail -> detail.assertThat().asString().contains("estado").contains("FOO"));
+    }
+
+    @Test
+    void rutaInexistenteDevuelve404EnJson() {
+        MvcTestResult result = mvc.get().uri("/api/nada").exchange();
+
+        assertThat(result).hasStatus(HttpStatus.NOT_FOUND)
+            .bodyJson()
+            .hasPathSatisfying("$.status", status -> status.assertThat().isEqualTo(404))
+            .hasPathSatisfying("$.title", title -> title.assertThat().isEqualTo("Recurso no encontrado"));
     }
 
     // ---- GET /api/incidencias/{id} ----

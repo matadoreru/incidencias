@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -23,8 +26,9 @@ import java.util.Objects;
 /**
  * Todos los errores de la API se devuelven como ProblemDetail (RFC 9457):
  * {type, title, status, detail, instance} y, en errores de validación, un mapa "errors" campo → mensaje.
- * Los errores que ya gestiona Spring (cuerpo ilegible, parámetro con tipo incorrecto, ruta inexistente...)
- * los convierte ResponseEntityExceptionHandler al mismo formato.
+ * Los errores que ya gestiona Spring los convierte ResponseEntityExceptionHandler al mismo formato; los más
+ * habituales (cuerpo ilegible, parámetro con tipo incorrecto, ruta inexistente) se sobreescriben aquí para que
+ * título y texto estén en español como el resto.
  */
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -66,6 +70,27 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         problem.setProperty("errors", errors);
 
         return ResponseEntity.badRequest().body(problem);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(
+        TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String detail = "El valor '%s' no es válido para '%s'.".formatted(ex.getValue(), ex.getPropertyName());
+        return ResponseEntity.badRequest().body(problem(HttpStatus.BAD_REQUEST, "Petición inválida", detail));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+        HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return ResponseEntity.badRequest().body(problem(HttpStatus.BAD_REQUEST, "Petición inválida",
+            "El cuerpo de la petición no es un JSON válido o contiene valores no permitidos."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(
+        NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem(HttpStatus.NOT_FOUND, "Recurso no encontrado",
+            "No existe la ruta /%s.".formatted(ex.getResourcePath())));
     }
 
     private static ProblemDetail problem(HttpStatus status, String title, String detail) {
